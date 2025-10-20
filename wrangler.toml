@@ -1,0 +1,6 @@
+name = "repackager"
+main = "src/index.js"
+compatibility_date = "2025-10-20"
+
+[observability]
+enabled = true
