@@ -69,8 +69,12 @@ Local development and manual deploys
 Notes about this Worker
 - Caches responses at the edge using `caches.default` with long-lived cache headers.
 - Expects a `?url=` pointing at a ZIP and optional `?name=` to name the resulting `.sublime-package`.
+- Security: `?url=` must use HTTPS and match an allowlist of hosts defined in `wrangler.toml` under `[vars].ALLOW_HOSTS`. Default is `codeload.github.com, bitbucket.org, codelab.org, gitlab.com`.
+- Size cap: upstream ZIPs larger than `MAX_ZIP_BYTES` (default 25 MB) are rejected with HTTP 413.
 
 Troubleshooting
 - 403 during deploy: the API token is missing scopes (add Workers Scripts:Edit and Workers Routes:Edit) or is for the wrong account/zone.
 - Route not applied: ensure you added either a Custom Domain (Dashboard) or a `routes` entry in `wrangler.toml` and that the token has permission to edit routes.
 - Not served on the subdomain: confirm the `sublimetext.io` zone is on Cloudflare (nameservers set) and that the custom domain/route exists and is active.
+- 400/403 at runtime: the provided `?url=` is invalid, non-HTTPS, points to localhost/IP, or its hostname is not in `ALLOW_HOSTS`.
+- 413 at runtime: the upstream ZIP exceeds `MAX_ZIP_BYTES`.

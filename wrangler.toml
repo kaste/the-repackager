@@ -8,3 +8,9 @@ routes = [
 
 [observability]
 enabled = true
+
+[vars]
+# Comma-separated allowed hostnames for ?url= parameter
+ALLOW_HOSTS = "codeload.github.com,bitbucket.org,codelab.org,gitlab.com"
+# Maximum upstream ZIP size in bytes (default 25MB if unset)
+MAX_ZIP_BYTES = "25000000"

@@ -122,7 +122,11 @@ describe("fetch handler", () => {
     );
     const waitUntil = vi.fn();
 
-    const response = await worker.fetch(request, {}, { waitUntil });
+    const response = await worker.fetch(
+      request,
+      { ALLOW_HOSTS: "codeload.github.com", MAX_ZIP_BYTES: "50000000" },
+      { waitUntil }
+    );
 
     expect(response.status).toBe(200);
     expect(globalThis.fetch).toHaveBeenCalledWith(remoteUrl);
@@ -150,8 +154,12 @@ describe("fetch handler", () => {
     );
     const waitUntil = vi.fn();
 
-    const response = await worker.fetch(request, {}, { waitUntil });
-
+    const response = await worker.fetch(
+      request,
+      { ALLOW_HOSTS: "codeload.github.com", MAX_ZIP_BYTES: "50000000" },
+      { waitUntil }
+    );
+  
     expect(response.status).toBe(200);
     expect(globalThis.fetch).toHaveBeenCalledWith(remoteUrl);
     expect(cacheMatch).toHaveBeenCalled();
@@ -165,6 +173,40 @@ describe("fetch handler", () => {
     expect(archive).toHaveProperty("load.py");
     expect(archive).toHaveProperty("src/build.py");
     expect(hasRootMarker(archive)).toBe(true);
+  });
+
+  it("rejects non-allowlisted host", async () => {
+    const remoteUrl = "https://example.com/archive.zip";
+    globalThis.fetch = createFetchMock(remoteUrl, new Uint8Array([1, 2, 3]));
+
+    const request = new Request(
+      `https://worker.example/?url=${encodeURIComponent(remoteUrl)}&name=X`
+    );
+    const waitUntil = vi.fn();
+
+    const response = await worker.fetch(
+      request,
+      { ALLOW_HOSTS: "codeload.github.com" },
+      { waitUntil }
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it("rejects http scheme", async () => {
+    const remoteUrl = "http://codeload.github.com/whatever.zip";
+    const request = new Request(
+      `https://worker.example/?url=${encodeURIComponent(remoteUrl)}&name=X`
+    );
+    const waitUntil = vi.fn();
+
+    const response = await worker.fetch(
+      request,
+      { ALLOW_HOSTS: "codeload.github.com" },
+      { waitUntil }
+    );
+
+    expect(response.status).toBe(400);
   });
 });
 
