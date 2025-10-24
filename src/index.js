@@ -25,6 +25,7 @@ export default {
 
     const files = unzipSync(new Uint8Array(arrayBuffer));
     let zipped;
+    let useZipExtension;
 
     if (shouldFlatten(files)) {
       // Flatten the single root folder
@@ -39,11 +40,14 @@ export default {
       }
 
       zipped = zipSync(newFiles);
+      useZipExtension = hasRootMarker(newFiles);
     } else {
       zipped = new Uint8Array(arrayBuffer);
+      useZipExtension = hasRootMarker(files);
     }
 
-    const filename = `${name}.sublime-package`;
+    const extension = useZipExtension ? "zip" : "sublime-package";
+    const filename = `${name}.${extension}`;
 
     response = new Response(zipped, {
       headers: {
@@ -94,4 +98,16 @@ function shouldFlatten(files) {
   }
 
   return hasNested;
+}
+
+/**
+ * Check whether the archive contains a `.no-sublime-package` marker file at
+ * the root level indicating it must be unpacked on the client.
+ *
+ * @param {Record<string, Uint8Array>} files - Map of archive paths to file data.
+ * @returns {boolean} True when the marker exists at the root.
+ */
+function hasRootMarker(files) {
+  const markerPattern = /^(?:\.\/|\/)?\.no-sublime-package$/;
+  return Object.keys(files).some((rawPath) => markerPattern.test(rawPath));
 }
