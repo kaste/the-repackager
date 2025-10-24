@@ -20,6 +20,20 @@ If the original ZIP contains the marker file `.no-sublime-package` at its root, 
   http://localhost:8787/?url=https://codeload.github.com/michaelblyons/SublimeSyntax-USFM-Bible/zip/version/st3092/0.1.0&name=USFM%20Bible
 
 
+## Run Tests
+
+Continuously:
+
+```bash
+npm run test
+```
+
+Or just once:
+
+```bash
+npm run test -- run
+```
+
 ## Deploy to Cloudflare
 
 1. Authenticate once with `npx wrangler login` (or set `CLOUDFLARE_API_TOKEN` in your environment).

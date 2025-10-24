@@ -69,7 +69,7 @@ export default {
  * @param {Record<string, Uint8Array>} files - Map of archive paths to file data.
  * @returns {boolean} True if flattening should be applied.
  */
-function shouldFlatten(files) {
+export function shouldFlatten(files) {
   const paths = Object.keys(files);
   if (!paths.length) return false;
 
@@ -107,7 +107,7 @@ function shouldFlatten(files) {
  * @param {Record<string, Uint8Array>} files - Map of archive paths to file data.
  * @returns {boolean} True when the marker exists at the root.
  */
-function hasRootMarker(files) {
+export function hasRootMarker(files) {
   const markerPattern = /^(?:\.\/|\/)?\.no-sublime-package$/;
   return Object.keys(files).some((rawPath) => markerPattern.test(rawPath));
 }
